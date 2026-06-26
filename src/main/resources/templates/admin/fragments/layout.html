@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="topbar(shell)">
+    <div class="dashboard-topbar d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-primary text-white">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock-fill fs-5"></i>
+            <h5 class="mb-0 fw-bold">Admin Console</h5>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="position-relative">
+                <i class="bi bi-bell fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      th:if="${shell.unreadNotifications > 0}"
+                      th:text="${shell.unreadNotifications}">0</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar-circle avatar-topbar">
+                    <span th:text="${#strings.substring(shell.username,0,1).toUpperCase()}">A</span>
+                </div>
+                <div>
+                    <p class="mb-0 fw-semibold" th:text="${shell.username}">admin</p>
+                    <span class="badge bg-light text-primary" th:text="${shell.role}">ADMIN</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<aside th:fragment="sidebar(activeMenu)" class="col-lg-2 admin-sidebar border-end">
+    <div class="p-3">
+        <a th:href="@{/admin/dashboard}" class="sidebar-link text-white" th:classappend="${activeMenu == 'dashboard'} ? 'active'"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
+        <a th:href="@{/admin/elections}" class="sidebar-link text-white" th:classappend="${activeMenu == 'elections'} ? 'active'"><i class="bi bi-calendar2-event-fill me-2"></i> Elections</a>
+        <a th:href="@{/admin/candidates}" class="sidebar-link text-white" th:classappend="${activeMenu == 'candidates'} ? 'active'"><i class="bi bi-person-badge-fill me-2"></i> Candidates</a>
+        <a th:href="@{/admin/voters}" class="sidebar-link text-white" th:classappend="${activeMenu == 'voters'} ? 'active'"><i class="bi bi-people-fill me-2"></i> Voters</a>
+        <a th:href="@{/admin/votes}" class="sidebar-link text-white" th:classappend="${activeMenu == 'votes'} ? 'active'"><i class="bi bi-check2-square me-2"></i> Votes</a>
+        <a th:href="@{/admin/results}" class="sidebar-link text-white" th:classappend="${activeMenu == 'results'} ? 'active'"><i class="bi bi-bar-chart-fill me-2"></i> Results</a>
+        <a th:href="@{/admin/notifications}" class="sidebar-link text-white" th:classappend="${activeMenu == 'notifications'} ? 'active'"><i class="bi bi-bell-fill me-2"></i> Notifications</a>
+        <a th:href="@{/admin/reports}" class="sidebar-link text-white" th:classappend="${activeMenu == 'reports'} ? 'active'"><i class="bi bi-file-earmark-text-fill me-2"></i> Reports</a>
+        <a th:href="@{/admin/users}" class="sidebar-link text-white" th:classappend="${activeMenu == 'users'} ? 'active'"><i class="bi bi-person-lines-fill me-2"></i> Users</a>
+        <a th:href="@{/admin/settings}" class="sidebar-link text-white" th:classappend="${activeMenu == 'settings'} ? 'active'"><i class="bi bi-sliders me-2"></i> Settings</a>
+        <a th:href="@{/signout}" class="sidebar-link text-danger-emphasis sidebar-link-logout"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+    </div>
+</aside>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' | E-Voting'">Election Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="voter-dashboard-bg">
+    <div class="container-fluid py-3 px-lg-4">
+        <div class="card border-0 shadow-sm dashboard-shell">
+            <div class="card-body p-0">
+                <div th:replace="~{fragments/toast :: toast}"></div>
+                <div
+                    class="dashboard-topbar d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-primary text-white">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check fs-4"></i>
+                        <h5 class="mb-0 fw-bold">E-Voting Dashboard</h5>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="position-relative">
+                            <i class="bi bi-bell fs-5"></i>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                th:if="${pageData.unreadNotifications > 0}"
+                                th:text="${pageData.unreadNotifications}">0</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle avatar-topbar overflow-hidden">
+                                <img th:if="${pageData.profileImagePath}" th:src="@{${pageData.profileImagePath}}"
+                                    alt="Profile" style="width:100%;height:100%;object-fit:cover;">
+                                <span th:if="${pageData.profileImagePath == null}"
+                                    th:text="${#strings.substring(pageData.fullName,0,1).toUpperCase()}">U</span>
+                            </div>
+                            <div>
+                                <p class="mb-0 fw-semibold" th:text="${pageData.fullName}">Full Name</p>
+                                <span class="badge bg-light text-primary" th:text="${pageData.role}">VOTER</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-0">
+                    <aside class="col-lg-2 border-end dashboard-sidebar">
+                        <div class="p-3">
+                            <a th:href="@{/home}" class="sidebar-link">
+                                <i class="bi bi-house-door-fill me-2"></i> Home
+                            </a>
+                            <a th:href="@{/voter/dashboard}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'dashboard'} ? 'active'">
+                                <i class="bi bi-grid-1x2-fill me-2"></i> Dashboard
+                            </a>
+                            <a th:href="@{/voter/active-elections}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'active-elections'} ? 'active'">
+                                <i class="bi bi-calendar2-check-fill me-2"></i> Active Elections
+                            </a>
+                            <a th:href="@{/voter/my-votes}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'my-votes'} ? 'active'">
+                                <i class="bi bi-check2-square me-2"></i> My Votes
+                            </a>
+                            <a th:href="@{/voter/results}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'results'} ? 'active'">
+                                <i class="bi bi-bar-chart-fill me-2"></i> Results
+                            </a>
+                            <a th:href="@{/voter/profile}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'profile'} ? 'active'">
+                                <i class="bi bi-person-circle me-2"></i> Profile
+                            </a>
+                            <a th:href="@{/voter/notifications}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'notifications'} ? 'active'">
+                                <i class="bi bi-bell-fill me-2"></i> Notifications
+                            </a>
+                            <a th:href="@{/signout}"
+                                class="sidebar-link text-danger fw-bold sidebar-link-logout mt-4 border border-danger-subtle">
+                                <i class="bi bi-box-arrow-right me-2"></i> Logout
+                            </a>
+                        </div>
+                    </aside>
+
+                    <section class="col-lg-10 p-3 p-lg-4">
+                        <div class="mb-4">
+                            <h4 class="fw-bold mb-1">Election Results</h4>
+                            <p class="text-secondary mb-0">View results of completed elections and candidate
+                                performance.</p>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6 col-xl-3">
+                                <div class="dash-stat-card">
+                                    <small>Total Elections</small>
+                                    <h4 th:text="${pageData.totalElections}">0</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3">
+                                <div class="dash-stat-card">
+                                    <small>Total Votes</small>
+                                    <h4 th:text="${pageData.totalVotes}">0</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3">
+                                <div class="dash-stat-card">
+                                    <small>Active Elections</small>
+                                    <h4 th:text="${pageData.activeElections}">0</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3">
+                                <div class="dash-stat-card">
+                                    <small>Voter Turnout %</small>
+                                    <h4 th:text="${pageData.voterTurnoutPercentage + '%'}">0%</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-xl-7">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="fw-bold mb-3">Recent Election Results</h5>
+                                        <div th:if="${!#lists.isEmpty(pageData.electionResults)}">
+                                            <div class="result-mini-card"
+                                                th:each="result : ${pageData.electionResults}">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1" th:text="${result.electionTitle}">Election</h6>
+                                                        <small class="text-secondary">
+                                                            <i class="bi bi-calendar-event me-1"></i>
+                                                            <span
+                                                                th:text="${#temporals.format(result.startsAt, 'dd MMM yyyy')}"></span>
+                                                            -
+                                                            <span
+                                                                th:text="${#temporals.format(result.endsAt, 'dd MMM yyyy')}"></span>
+                                                        </small>
+                                                    </div>
+                                                    <span class="badge text-bg-success-subtle text-success-emphasis"
+                                                        th:text="${result.status}">COMPLETED</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <div class="small">Winner: <strong
+                                                            th:text="${result.winnerName}">Winner</strong>
+                                                        <span class="text-secondary"
+                                                            th:text="${'(' + result.winnerParty + ')'}">(Party)</span>
+                                                    </div>
+                                                    <div class="small text-secondary">
+                                                        Total Votes: <span th:text="${result.totalVotes}">0</span>
+                                                        | Turnout: <span
+                                                            th:text="${result.turnoutPercentage + '%'}">0%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-2" th:each="bar : ${result.candidateBars}">
+                                                    <div class="d-flex justify-content-between small">
+                                                        <span th:text="${bar.candidateName}">Candidate</span>
+                                                        <span th:text="${bar.votePercentage + '%'}">0%</span>
+                                                    </div>
+                                                    <div class="progress progress-thin mb-2">
+                                                        <div class="progress-bar bg-primary"
+                                                            th:style="|width:${bar.votePercentage}%;|"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-secondary" th:if="${#lists.isEmpty(pageData.electionResults)}">
+                                            No completed election results found.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-5">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="fw-bold mb-3">Top Performing Candidates</h5>
+                                        <div th:if="${!#lists.isEmpty(pageData.topCandidates)}">
+                                            <div class="top-candidate-item"
+                                                th:each="candidate : ${pageData.topCandidates}">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="avatar-circle avatar-sm overflow-hidden">
+                                                             <img th:if="${candidate.imagePath}" th:src="@{${candidate.imagePath}}" alt="Photo" style="width:100%;height:100%;object-fit:cover;">
+                                                             <span th:if="${candidate.imagePath == null}"
+                                                                 th:text="${#strings.substring(candidate.candidateName,0,1).toUpperCase()}">C</span>
+                                                         </div>
+                                                        <div>
+                                                            <h6 class="mb-0" th:text="${candidate.candidateName}">Candidate
+                                                            </h6>
+                                                            <small class="text-secondary"
+                                                                th:text="${candidate.partyName}">Party</small>
+                                                        </div>
+                                                    </div>
+                                                    <small class="fw-semibold"
+                                                        th:text="${candidate.voteCount + ' votes'}">0 votes</small>
+                                                </div>
+                                                <div class="progress mt-2 progress-thin">
+                                                    <div class="progress-bar bg-success"
+                                                        th:style="|width:${candidate.votePercentage}%;|"
+                                                        th:text="${candidate.votePercentage + '%'}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-secondary" th:if="${#lists.isEmpty(pageData.topCandidates)}">
+                                            No candidate rankings available.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm my-votes-table-card">
+                            <div class="card-body">
+                                <h5 class="fw-bold mb-3">Recent Results Table</h5>
+                                <div class="table-responsive">
+                                    <table class="table align-middle mb-0 my-votes-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Election Name</th>
+                                                <th>Winner</th>
+                                                <th>Total Votes</th>
+                                                <th>Result Status</th>
+                                                <th>Published Date</th>
+                                                <th class="text-end">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:if="${#lists.isEmpty(pageData.recentResults)}">
+                                                <td colspan="6" class="text-center py-4 text-secondary">No result
+                                                    records available.</td>
+                                            </tr>
+                                            <tr th:each="row : ${pageData.recentResults}">
+                                                <td th:text="${row.electionTitle}">Election</td>
+                                                <td th:text="${row.winnerName}">Winner</td>
+                                                <td>
+                                                    <div th:text="${row.totalVotes}">0</div>
+                                                    <small class="text-secondary"
+                                                        th:text="${row.turnoutPercentage + '% turnout'}">0%</small>
+                                                </td>
+                                                <td><span class="badge text-bg-success-subtle text-success-emphasis"
+                                                        th:text="${row.resultStatus}">PUBLISHED</span></td>
+                                                <td
+                                                    th:text="${#temporals.format(row.publishedDate, 'dd MMM yyyy, hh:mm a')}">
+                                                    Date</td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-link p-0 text-decoration-none fw-semibold me-2"
+                                                        th:href="@{'/voter/results/' + ${row.electionId}}">View
+                                                        Details</a>
+                                                    <a class="btn btn-link p-0 text-decoration-none fw-semibold"
+                                                        th:href="@{'/voter/results/' + ${row.electionId} + '/download'}">Download
+                                                        Result</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <ul class="pagination mb-0">
+                                <li class="page-item" th:classappend="${!pageData.hasPrevious} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/voter/results(page=${pageData.previousPage})}">Previous</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"
+                                        th:text="${pageData.totalPages == 0 ? 'Page 1 of 1' : 'Page ' + (pageData.pageNumber + 1) + ' of ' + pageData.totalPages}">
+                                        Page 1 of 1
+                                    </span>
+                                </li>
+                                <li class="page-item" th:classappend="${!pageData.hasNext} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/voter/results(page=${pageData.nextPage})}">Next</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

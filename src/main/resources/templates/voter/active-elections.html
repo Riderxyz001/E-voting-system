@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' | E-Voting'">Active Elections</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="voter-dashboard-bg">
+    <div class="container-fluid py-3 px-lg-4">
+        <div class="card border-0 shadow-sm dashboard-shell">
+            <div class="card-body p-0">
+                <div th:replace="~{fragments/toast :: toast}"></div>
+                <div th:replace="~{fragments/voter-topbar-compact :: topbar}"></div>
+
+                <div class="row g-0">
+                    <aside class="col-lg-2 border-end dashboard-sidebar">
+                        <div class="p-3">
+                            <a th:href="@{/home}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'home'} ? 'active'">
+                                <i class="bi bi-house-door-fill me-2"></i> Home
+                            </a>
+                            <a th:href="@{/voter/dashboard}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'dashboard'} ? 'active'">
+                                <i class="bi bi-grid-1x2-fill me-2"></i> Dashboard
+                            </a>
+                            <a th:href="@{/voter/active-elections}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'active-elections'} ? 'active'">
+                                <i class="bi bi-calendar2-check-fill me-2"></i> Active Elections
+                            </a>
+                            <a th:href="@{/voter/my-votes}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'my-votes'} ? 'active'">
+                                <i class="bi bi-check2-square me-2"></i> My Votes
+                            </a>
+                            <a th:href="@{/voter/results}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'results'} ? 'active'">
+                                <i class="bi bi-bar-chart-fill me-2"></i> Results
+                            </a>
+                            <a th:href="@{/voter/profile}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'profile'} ? 'active'">
+                                <i class="bi bi-person-circle me-2"></i> Profile
+                            </a>
+                            <a th:href="@{/voter/notifications}" class="sidebar-link"
+                                th:classappend="${activeMenu == 'notifications'} ? 'active'">
+                                <i class="bi bi-bell-fill me-2"></i> Notifications
+                            </a>
+                            <a th:href="@{/signout}"
+                                class="sidebar-link text-danger fw-bold sidebar-link-logout mt-4 border border-danger-subtle">
+                                <i class="bi bi-box-arrow-right me-2"></i> Logout
+                            </a>
+                        </div>
+                    </aside>
+
+                    <section class="col-lg-10 p-3 p-lg-4">
+                        <div class="mb-4">
+                            <h4 class="fw-bold mb-1">Active Elections</h4>
+                            <p class="text-secondary mb-0">Vote in ongoing elections and make your voice heard.</p>
+                        </div>
+
+                        <form th:action="@{/voter/active-elections}" method="get" class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-3">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-8">
+                                        <label class="form-label mb-1">Search Elections</label>
+                                        <input type="text" class="form-control" name="q" th:value="${pageData.search}"
+                                            placeholder="Search by election title">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label mb-1">Status</label>
+                                        <select class="form-select" name="status">
+                                            <option value="ALL" th:selected="${pageData.statusFilter == 'ALL'}">All
+                                            </option>
+                                            <option value="ACTIVE" th:selected="${pageData.statusFilter == 'ACTIVE'}">
+                                                Active</option>
+                                            <option value="UPCOMING"
+                                                th:selected="${pageData.statusFilter == 'UPCOMING'}">Upcoming</option>
+                                            <option value="COMPLETED"
+                                                th:selected="${pageData.statusFilter == 'COMPLETED'}">Completed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-3 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-funnel-fill me-1"></i> Apply Filter
+                                    </button>
+                                    <a th:href="@{/voter/active-elections}" class="btn btn-outline-secondary">Reset</a>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="row g-4">
+                            <div class="col-md-6 col-xl-4" th:each="election : ${pageData.elections}">
+                                <div class="card border-0 shadow-sm election-grid-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="election-icon-wrap">
+                                                    <i class="bi bi-check2-square"></i>
+                                                </div>
+                                                <h6 class="fw-semibold mb-0" th:text="${election.title}">Election title
+                                                </h6>
+                                            </div>
+                                            <span class="badge" th:classappend="${election.statusBadgeClass}"
+                                                th:text="${election.status}">ACTIVE</span>
+                                        </div>
+                                        <p class="small text-secondary mb-3" th:text="${election.description}">
+                                            Description</p>
+                                        <p class="small mb-1 text-secondary">
+                                            <i class="bi bi-calendar-event me-1"></i>
+                                            <span
+                                                th:text="${#temporals.format(election.startsAt, 'dd MMM yyyy')}">Start</span>
+                                            -
+                                            <span
+                                                th:text="${#temporals.format(election.endsAt, 'dd MMM yyyy')}">End</span>
+                                        </p>
+                                        <p class="small mb-3 text-secondary">
+                                            <i class="bi bi-people-fill me-1"></i>
+                                            <span th:text="${election.totalCandidates + ' Candidates'}">0
+                                                Candidates</span>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <small class="text-secondary" th:if="${election.status != 'COMPLETED'}"
+                                                th:text="${election.daysLeft + ' days left'}">0 days left</small>
+                                            <small class="text-secondary"
+                                                th:if="${election.status == 'COMPLETED'}">Election closed</small>
+                                            <a th:href="@{'/voter/elections/' + ${election.id} + '/vote'}"
+                                                class="btn btn-primary btn-sm"
+                                                th:classappend="${election.status == 'COMPLETED'} ? ' disabled'">Vote
+                                                Now</a>
+                                        </div>
+                                        <a th:href="@{'/voter/elections/' + ${election.id}}"
+                                            class="small text-primary text-decoration-none fw-semibold">
+                                            View Details <i class="bi bi-arrow-right-short"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm mt-4" th:if="${#lists.isEmpty(pageData.elections)}">
+                            <div class="card-body text-secondary">
+                                No elections found for selected search/filter.
+                            </div>
+                        </div>
+
+                        <div
+                            class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
+                            <div class="card border-0 motivation-card flex-grow-1">
+                                <div class="card-body py-3">
+                                    <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+                                    <strong>Every vote counts.</strong>
+                                    <span class="text-secondary">Your decision shapes leadership and impact.</span>
+                                </div>
+                            </div>
+                            <nav aria-label="Election pagination">
+                                <ul class="pagination mb-0">
+                                    <li class="page-item" th:classappend="${!pageData.hasPrevious} ? 'disabled'">
+                                        <a class="page-link"
+                                            th:href="@{/voter/active-elections(q=${pageData.search},status=${pageData.statusFilter},page=${pageData.previousPage})}">
+                                            Previous
+                                        </a>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link"
+                                            th:text="${pageData.totalPages == 0 ? 'Page 1 of 1' : 'Page ' + (pageData.pageNumber + 1) + ' of ' + pageData.totalPages}">
+                                            Page 1 of 1
+                                        </span>
+                                    </li>
+                                    <li class="page-item" th:classappend="${!pageData.hasNext} ? 'disabled'">
+                                        <a class="page-link"
+                                            th:href="@{/voter/active-elections(q=${pageData.search},status=${pageData.statusFilter},page=${pageData.nextPage})}">
+                                            Next
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

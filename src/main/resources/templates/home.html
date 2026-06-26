@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' | E-Voting'">E-Voting System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<th:block th:if="${pageData != null}">
+    <div th:replace="~{fragments/voter-topbar :: topbar}"></div>
+</th:block>
+<th:block th:if="${pageData == null}">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</th:block>
+
+<main class="flex-grow-1">
+    <section class="hero-section py-5 py-lg-6">
+        <div class="container py-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-3">
+                        College Major Project
+                    </span>
+                    <h1 class="display-5 fw-bold mb-3">Smart E-Voting Platform for Transparent Elections</h1>
+                    <p class="lead text-secondary mb-4">
+                        A secure and modern digital election dashboard for college-level elections, project demos,
+                        and real-world style voting workflows.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a th:if="${session.AUTH_USER_ID == null}" th:href="@{/register}" class="btn btn-primary btn-lg px-4">Get Started</a>
+                        <a th:if="${session.AUTH_USER_ID == null}" th:href="@{/login}" class="btn btn-outline-primary btn-lg px-4">Live Dashboard Access</a>
+                        <a th:if="${session.AUTH_USER_ID != null}" th:href="@{${session.AUTH_USER_ROLE == 'ROLE_ADMIN' ? '/admin/dashboard' : '/voter/dashboard'}}" class="btn btn-primary btn-lg px-4">Go to Dashboard</a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card dashboard-highlight shadow border-0">
+                        <div class="card-body p-4">
+                            <h5 class="fw-semibold mb-4">Live Platform Overview</h5>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <span class="text-secondary">Registered Voters</span>
+                                <span class="fw-semibold" th:text="${dashboard.summary.totalRegisteredVoters}">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <span class="text-secondary">Active Elections</span>
+                                <span class="fw-semibold" th:text="${dashboard.summary.totalActiveElections}">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <span class="text-secondary">Votes Cast</span>
+                                <span class="fw-semibold" th:text="${dashboard.summary.totalVotesCast}">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-secondary">System Uptime</span>
+                                <span class="fw-semibold text-success"
+                                      th:text="${dashboard.summary.systemUptimePercentage + '%'}">99.9%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container">
+            <div class="row g-3 g-lg-4">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="stat-card h-100">
+                        <i class="bi bi-people-fill stat-icon"></i>
+                        <h6 class="text-secondary mt-2 mb-1">Voters</h6>
+                        <h4 th:text="${dashboard.summary.totalRegisteredVoters}">0</h4>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="stat-card h-100">
+                        <i class="bi bi-calendar2-check-fill stat-icon"></i>
+                        <h6 class="text-secondary mt-2 mb-1">Active Elections</h6>
+                        <h4 th:text="${dashboard.summary.totalActiveElections}">0</h4>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="stat-card h-100">
+                        <i class="bi bi-person-badge-fill stat-icon"></i>
+                        <h6 class="text-secondary mt-2 mb-1">Candidates</h6>
+                        <h4 th:text="${dashboard.summary.totalCandidates}">0</h4>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="stat-card h-100">
+                        <i class="bi bi-check2-square stat-icon"></i>
+                        <h6 class="text-secondary mt-2 mb-1">Votes Cast</h6>
+                        <h4 th:text="${dashboard.summary.totalVotesCast}">0</h4>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="stat-card h-100">
+                        <i class="bi bi-graph-up-arrow stat-icon"></i>
+                        <h6 class="text-secondary mt-2 mb-1">Turnout Focus</h6>
+                        <h4 th:text="${dashboard.summary.totalVotesCast > 0 ? 'High' : 'Pending'}">High</h4>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="stat-card h-100">
+                        <i class="bi bi-shield-check stat-icon"></i>
+                        <h6 class="text-secondary mt-2 mb-1">Uptime</h6>
+                        <h4 th:text="${dashboard.summary.systemUptimePercentage + '%'}">99.9%</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold mb-0">Active Elections</h3>
+                <a th:if="${session.AUTH_USER_ID == null}" th:href="@{/login}" class="btn btn-sm btn-outline-primary">View Elections</a>
+                <a th:if="${session.AUTH_USER_ID != null}" th:href="@{${session.AUTH_USER_ROLE == 'ROLE_ADMIN' ? '/admin/active-elections' : '/voter/active-elections'}}" class="btn btn-sm btn-outline-primary">View Elections</a>
+            </div>
+            <div class="row g-4" th:if="${!#lists.isEmpty(dashboard.activeElections)}">
+                <div class="col-md-6 col-xl-4" th:each="election : ${dashboard.activeElections}">
+                    <div class="card election-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="fw-semibold" th:text="${election.title}">Election title</h5>
+                            <p class="text-secondary small mb-3" th:text="${election.description}">Description</p>
+                            <div class="small text-secondary mb-1">
+                                <i class="bi bi-clock-history me-1"></i>
+                                Starts:
+                                <span th:text="${#temporals.format(election.startsAt, 'dd MMM yyyy, hh:mm a')}"></span>
+                            </div>
+                            <div class="small text-secondary mb-3">
+                                <i class="bi bi-hourglass-split me-1"></i>
+                                Ends:
+                                <span th:text="${#temporals.format(election.endsAt, 'dd MMM yyyy, hh:mm a')}"></span>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span>Candidates: <strong th:text="${election.totalCandidates}">0</strong></span>
+                                <span>Votes: <strong th:text="${election.totalVotes}">0</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-light border text-secondary" th:if="${#lists.isEmpty(dashboard.activeElections)}">
+                No active elections available right now.
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">Top Candidates</h4>
+                            <div th:if="${!#lists.isEmpty(dashboard.topCandidates)}">
+                                <div class="candidate-row mb-3" th:each="candidate : ${dashboard.topCandidates}">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1" th:text="${candidate.candidateName}">Candidate Name</h6>
+                                            <p class="small text-secondary mb-1">
+                                                <span th:text="${candidate.partyName}">Party</span>
+                                                -
+                                                <span th:text="${candidate.electionTitle}">Election</span>
+                                            </p>
+                                        </div>
+                                        <span class="badge text-bg-primary-subtle text-primary-emphasis"
+                                              th:text="${candidate.voteCount + ' votes'}">0 votes</span>
+                                    </div>
+                                    <div class="progress progress-thin mt-2">
+                                        <div class="progress-bar"
+                                             th:style="'width:' + ${candidate.votePercentage} + '%'"
+                                             th:text="${candidate.votePercentage + '%'}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-secondary" th:if="${#lists.isEmpty(dashboard.topCandidates)}">
+                                Top candidates will appear once votes are cast.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">Recent Election Results</h4>
+                            <div th:if="${!#lists.isEmpty(dashboard.recentResults)}">
+                                <div class="result-block mb-4" th:each="result : ${dashboard.recentResults}">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1" th:text="${result.electionTitle}">Election title</h6>
+                                            <p class="small text-secondary mb-0">
+                                                Winner:
+                                                <strong th:text="${result.winnerName}">Candidate</strong>
+                                                (<span th:text="${result.winnerParty}">Party</span>)
+                                            </p>
+                                        </div>
+                                        <span class="small fw-semibold text-success"
+                                              th:text="${result.winnerPercentage + '%'}">0%</span>
+                                    </div>
+
+                                    <div class="small text-secondary mb-2"
+                                         th:text="${'Total votes: ' + result.totalVotes}">Total votes: 0</div>
+
+                                    <div class="mb-2"
+                                         th:each="candidateResult : ${result.candidateResults}">
+                                        <div class="d-flex justify-content-between small">
+                                            <span>
+                                                <span th:text="${candidateResult.candidateName}">Candidate</span>
+                                                (<span th:text="${candidateResult.partyName}">Party</span>)
+                                            </span>
+                                            <span th:text="${candidateResult.votePercentage + '%'}">0%</span>
+                                        </div>
+                                        <div class="progress progress-thin mt-1">
+                                            <div class="progress-bar bg-success"
+                                                 th:style="'width:' + ${candidateResult.votePercentage} + '%'"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-secondary" th:if="${#lists.isEmpty(dashboard.recentResults)}">
+                                Recent completed election results are not available yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">Frequently Asked Questions</h4>
+                            <div class="accordion" id="faqAccordion" th:if="${!#lists.isEmpty(dashboard.faqs)}">
+                                <div class="accordion-item" th:each="faq : ${dashboard.faqs}">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse"
+                                                th:attr="data-bs-target='#faq-' + ${faq.id}, aria-controls='faq-' + ${faq.id}">
+                                            <span th:text="${faq.question}">Question</span>
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse"
+                                         th:id="${'faq-' + faq.id}"
+                                         data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body text-secondary" th:text="${faq.answer}">Answer</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-secondary" th:if="${#lists.isEmpty(dashboard.faqs)}">
+                                FAQs will be displayed once added by admin.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">What Students Say</h4>
+                            <div th:if="${!#lists.isEmpty(dashboard.testimonials)}">
+                                <div class="testimonial-card p-3 mb-3"
+                                     th:each="testimonial : ${dashboard.testimonials}">
+                                    <div class="mb-2 text-warning">
+                                        <i class="bi bi-star-fill"
+                                           th:each="star : ${#numbers.sequence(1, testimonial.rating)}"></i>
+                                    </div>
+                                    <p class="mb-2 text-secondary" th:text="${testimonial.message}">Feedback</p>
+                                    <h6 class="mb-0" th:text="${testimonial.authorName}">Name</h6>
+                                    <small class="text-secondary" th:text="${testimonial.designation}">Role</small>
+                                </div>
+                            </div>
+                            <div class="text-secondary" th:if="${#lists.isEmpty(dashboard.testimonials)}">
+                                Testimonials will appear once feedback is submitted.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
