@@ -143,7 +143,7 @@ Feel free to fork this repository and submit a pull request.
 **Ajay Yadav**
 
 - GitHub: https://github.com/Riderxyz001
-- LinkedIn: *(Add your LinkedIn profile here)*
+- LinkedIn: https://www.linkedin.com/in/ajay-yadav-04997a324
 
 ---
 
